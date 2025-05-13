@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#000000">
+  <title>Обратный таймер с сохранением</title>
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      padding: 0;
+    }
+    #loading {
+      background-color: black;
+      height: 100vh;
+      width: 100vw;
+      left: 0;
+      top: 0;
+      position: absolute;
+      transition: 1s;
+      z-index: 1;
+    }
+    .loadingtxt {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: sans-serif;
+    }
+    .timer {
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      margin-top: 50px;
+      font-family: monospace;
+    }
+    #timerjs {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+    #endtext {
+      border: solid;
+      border-radius: 15px;
+      border-width: 2px;
+      border-color: white;
+      box-shadow: 0px 0px 43px rgba(255, 255, 255, 0.7);
+      height: auto;
+      width: 70%;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 50px;
+      background-color: #ffffff;
+      opacity: 0;
+      transition: 1s;
+    }
+    .txt {
+      height: auto;
+      width: 80%;
+      background-color: white;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="txt">
+    <b>С этого всё началось — с первого чертежа МКС. Маленький шаг, который запустил целую орбиту идей.</b>
+  </div>
+  <div id="loading">
+    <p class="loadingtxt">loading...</p>
+  </div>
+  <div class="timer">
+    <b id="timerjs"></b>
+  </div>
+  <div id="endtext">
+    <p>Ка<b>ж</b>ды<b>й</b> пу<u>т</u>ь нач<b>и</b>нает<b>с</b>я, с перв<u>о</u>го шага, д<u>а</u>же <u>е</u>сли ты его ещё н<u>е</u> видишь</p>
+  </div>
+  <script>
+    // Загружаем сохранённое время или начинаем с исходного значения
+    let savedTime = localStorage.getItem('timerTime');
+    let totalSeconds = savedTime ? parseInt(savedTime) : 123 * 3600 + 23 * 60 + 9;  // Начальное время: 123:23:09
+
+    // Сохранение времени в localStorage
+    function saveTime() {
+      localStorage.setItem('timerTime', totalSeconds);
+    }
+
+    // Таймер загрузки
+    const loading = document.getElementById("loading");
+    let loadtime = 1;
+
+    const loadingInterval = setInterval(function () {
+      if (loadtime > 0) {
+        loadtime--;
+      } else {
+        loading.style.opacity = "0";
+        clearInterval(loadingInterval);
+      }
+    }, 1000);
+
+    // Форматирование времени
+    function formatTime(seconds) {
+      const hours = String(Math.floor(seconds / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      return `${hours}:${minutes}:${secs}`;
+    }
+
+    // Обновление таймера
+    function updateTimer() {
+      if (totalSeconds >= 0) {
+        const formattedTime = formatTime(totalSeconds);
+        document.getElementById("timerjs").textContent = formattedTime;
+        console.log(formattedTime);
+        totalSeconds--;
+        saveTime();  // Сохраняем время
+      } else {
+        document.getElementById("timerjs").textContent = "00:00:00";
+        console.log("Таймер завершён");
+        endtxt.style.opacity = 1;
+      }
+    }
+
+    // Обновлять каждую секунду
+    setInterval(updateTimer, 1000);
+    
+    let endtxt = document.getElementById("endtext");
+  </script>
+</body>
+  </html>
